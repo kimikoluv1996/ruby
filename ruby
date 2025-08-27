@@ -1,38 +1,30 @@
 #!/bin/python3
-import sys,re
+import sys
 import json as j
 user = "Joey"
-
-appointments = []
 
 class Appointment:
 		def __init__(self, date, appType):
 			self.appDate = date
 			self.appType = appType
+			self.dictionary = dict(date=self.appDate, appointment_type = self.appType)
 
 		def get_appointment(self):
-			return dict(date=self.appDate, appointment_type=self.appType)
+			return self.dictionary
 
 def store_appointment_v2(appointment):
-	with open("appointments.json", "w") as jfile:
+	with open("appointments.json", "a") as jfile:
 		j.dump(appointment, jfile)
-
-""" def storeAppointment(appoin):
-		appString = f"{appoin.appDate[1]}/{appoin.appDate[0]}, {appoin.appType}\n"	
-		file = open("appointments.txt", "a")
-		file.write(appString)
-		file.close() """
 
 def createAppointment():
 		print("OK. Pass me the date and type of appointment please!")
 		day = int(input("The day of the appointment: "))
 		month = int(input("The month: "))
 		date = (day, month)
-		aType = input("Now what type of appointment is it?")
+		aType = input("Now what type of appointment is it? ")
 		newApp = Appointment(date, aType)
 		print("Ok, I've created a new appointment for you!")
 		print(f"It is a {aType} appointment on {month}/{day}")
-		appointments.append(newApp)
 		store_appointment_v2(newApp.get_appointment())
 		#storeAppointment(newApp)
 		
@@ -42,18 +34,16 @@ def goodmorning():
 		print("Today's weather is sunny with a high of 78")
 		print("Expect rain tomorrow")
 
-def remind():
-		with open("appointments.txt", "r") as file:
-			reg = re.compile(r'\(\d\,\s\d\)\,\s+\w+')
-			for line in file:
-					mo = reg.search(line)
-					print(mo.group())
+def remind_v2():
+	with open("json/appointments.json", "r") as file:
+		raw_app = j.load(file)
+		print(f"your next {raw_app["appointment_type"]} appointment is on {raw_app["date"]}")
 
 if __name__ == "__main__":
 	if len(sys.argv) > 1 and sys.argv[1] == "new":
 			createAppointment()
 	if len(sys.argv) > 1 and sys.argv[1] == "remind":
-		remind()
+		remind_v2()
 	elif len(sys.argv) > 1 and sys.argv[1] != "new":
 			print("I don't understand")
 	elif len(sys.argv) == 1:
